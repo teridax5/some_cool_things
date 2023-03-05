@@ -1,5 +1,18 @@
+import time
+
 from numpy import double, arange, array
 from functools import reduce
+
+
+def time_decorator(func):
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        delta = end - start
+        print(f'Function {func.__name__} was evaluated at {delta} secs!')
+        return result
+    return wrapper
 
 
 class IntegralCalculation:
@@ -23,8 +36,8 @@ class IntegralCalculation:
         cls.eval_funcs['trapezoid'] = cls.__form_trapeziodal_method
         cls.eval_funcs['simpson'] = cls.__form_simpson_method
 
-    @classmethod
-    def __form_rectangle_method(cls, func_vals: array):
+    @staticmethod
+    def __form_rectangle_method(func_vals: array):
         result = reduce(lambda x, y: x + y, func_vals)
         return result
 
@@ -49,6 +62,7 @@ class IntegralCalculation:
             shift += 1
         return result
 
+    @time_decorator
     def evaluate_integral(self):
         a, b = self.limits
         end_num = double((b - a)) / self.eval_step
@@ -63,7 +77,8 @@ class IntegralCalculation:
 
 
 if __name__ == '__main__':
-    new_integral = IntegralCalculation(limits=(0, 10),
-                                       eval_step=0.000001,
-                                       eval_method='simpson')
+    new_integral = IntegralCalculation(limits=(0, 1),
+                                       eval_step=10**-8,
+                                       func=lambda x: 4*(1-x**2)**0.5,
+                                       eval_method='trapezoid')
     print(new_integral.evaluate_integral())

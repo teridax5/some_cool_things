@@ -43,5 +43,5 @@ class DerivativeCalculation:
 
 
 if __name__ == '__main__':
-    new_derivative = DerivativeCalculation(eval_func=lambda x: x**3)
-    print(new_derivative.eval_derivative(order=4))
+    new_derivative = DerivativeCalculation(eval_func=lambda x: x**3-2*x**2)
+    print(new_derivative.eval_derivative(order=2))
