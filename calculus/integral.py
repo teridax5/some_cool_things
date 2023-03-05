@@ -3,16 +3,28 @@ from functools import reduce
 
 
 class IntegralCalculation:
-    def __init__(self, limits=(0, 1), eval_step=double(0.001),
+    eval_funcs = {}
+
+    def __new__(cls, *args, **kwargs):
+        cls.__add_methods()
+        return super().__new__(cls)
+
+    def __init__(self, limits=(0, 1), eval_step=0.001,
                  eval_method='rectangle', func=lambda x: x):
-        self.eval_step = eval_step
+        self.eval_step = double(eval_step)
         self.eval_method = eval_method
         self.func = func
         self.limits = limits
         self.eval_error = None
 
-    @staticmethod
-    def __form_rectangle_method(func_vals: array):
+    @classmethod
+    def __add_methods(cls):
+        cls.eval_funcs['rectangle'] = cls.__form_rectangle_method
+        cls.eval_funcs['trapezoid'] = cls.__form_trapeziodal_method
+        cls.eval_funcs['simpson'] = cls.__form_simpson_method
+
+    @classmethod
+    def __form_rectangle_method(cls, func_vals: array):
         result = reduce(lambda x, y: x + y, func_vals)
         return result
 
@@ -42,19 +54,16 @@ class IntegralCalculation:
         end_num = double((b - a)) / self.eval_step
         counting_interval = arange(a, end_num) * self.eval_step
         func_values = self.func(counting_interval)
-        if self.eval_method == 'rectangle':
-            result = self.__form_rectangle_method(func_values)
-        elif self.eval_method == 'trapezoid':
-            result = self.__form_trapeziodal_method(func_values)
-        elif self.eval_method == 'simpson':
-            result = self.__form_simpson_method(func_values)
+        if self.eval_method in self.eval_funcs.keys():
+            eval_func = self.eval_funcs[self.eval_method]
+            result = eval_func(func_values)
         else:
-            raise ValueError('No such method programmed!')
+            raise ValueError('No such evaluation method!')
         return result*self.eval_step
 
 
 if __name__ == '__main__':
-    new_integral = IntegralCalculation(limits=(0, 4),
-                                       eval_step=double(0.00001),
+    new_integral = IntegralCalculation(limits=(0, 10),
+                                       eval_step=0.000001,
                                        eval_method='simpson')
     print(new_integral.evaluate_integral())
