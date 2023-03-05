@@ -42,6 +42,19 @@ class IntegralCalculation:
         end_num = double((b - a)) / self.eval_step
         counting_interval = arange(a, end_num) * self.eval_step
         func_values = self.func(counting_interval)
+        if self.eval_method == 'rectangle':
+            result = self.__form_rectangle_method(func_values)
+        elif self.eval_method == 'trapezoid':
+            result = self.__form_trapeziodal_method(func_values)
+        elif self.eval_method == 'simpson':
+            result = self.__form_simpson_method(func_values)
+        else:
+            raise ValueError('No such method programmed!')
+        return result*self.eval_step
 
 
-
+if __name__ == '__main__':
+    new_integral = IntegralCalculation(limits=(0, 4),
+                                       eval_step=double(0.00001),
+                                       eval_method='simpson')
+    print(new_integral.evaluate_integral())
